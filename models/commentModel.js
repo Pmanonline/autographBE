@@ -6,22 +6,20 @@ const commentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    postId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
-      required: true,
-    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "User", // Make sure this matches your User model name
       required: true,
     },
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+    slug: {
+      type: String,
+      required: true,
+    },
+    likes: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+    },
     numberOfLikes: {
       type: Number,
       default: 0,
