@@ -82,6 +82,60 @@ const getAllDigitalEditions = async (req, res, next) => {
     next(error);
   }
 };
+const getDigitalEditionsCount = async (req, res, next) => {
+  try {
+    const { category } = req.query;
+
+    // Build query object
+    let query = {};
+    if (category) {
+      query.category = new RegExp(category, "i");
+    }
+
+    const count = await DigitalEdition.countDocuments(query);
+    res.status(200).json({ count });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get paginated digital editions
+const getAllDigitalEditions2 = async (req, res, next) => {
+  try {
+    const { category, startIndex = 0, limit = 9 } = req.query;
+    const pageSize = parseInt(limit);
+    const skip = parseInt(startIndex);
+
+    // Build query object
+    let query = {};
+    if (category) {
+      query.category = new RegExp(category, "i");
+    }
+
+    // Get total count for the query
+    const totalCount = await DigitalEdition.countDocuments(query);
+
+    // Get paginated results
+    const digitalEditions = await DigitalEdition.find(query)
+      .sort({ createdAt: -1 })
+      .populate("authorId", "name image bio")
+      .skip(skip)
+      .limit(pageSize);
+
+    // Send response with pagination metadata
+    res.status(200).json({
+      digitalEditions,
+      pagination: {
+        total: totalCount,
+        pageSize,
+        currentPage: Math.floor(skip / pageSize) + 1,
+        totalPages: Math.ceil(totalCount / pageSize),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getDigitalEditionBySlug = async (req, res, next) => {
   try {
@@ -242,6 +296,8 @@ const deleteDigitalEdition = async (req, res, next) => {
 module.exports = {
   createDigitalEdition,
   getAllDigitalEditions,
+  getAllDigitalEditions2,
+  getDigitalEditionsCount,
   getDigitalEditionById,
   getDigitalEditionBySlug,
   updateDigitalEdition,

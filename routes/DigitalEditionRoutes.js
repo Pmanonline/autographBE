@@ -1,67 +1,3 @@
-// const express = require("express");
-// const router = express.Router();
-// const multer = require("multer");
-// const path = require("path");
-
-// // Import controller functions
-// const {
-//   createDigitalEdition,
-//   getAllDigitalEditions,
-//   getDigitalEditionById,
-//   getDigitalEditionBySlug,
-//   updateDigitalEdition,
-//   deleteDigitalEdition,
-// } = require("../controllers/DigitalEditionController");
-
-// // Configure multer storage
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "uploads/");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, `${Date.now()}-${file.originalname}`);
-//   },
-// });
-
-// const upload = multer({
-//   storage: storage,
-//   limits: { fileSize: 100 * 1024 * 1024 },
-//   fileFilter: (req, file, cb) => {
-//     const pdfFileTypes = /pdf/;
-//     const extName = path.extname(file.originalname).toLowerCase();
-
-//     if (pdfFileTypes.test(extName) && /pdf/.test(file.mimetype)) {
-//       return cb(null, true);
-//     } else {
-//       cb("Error: You can only upload PDF files!");
-//     }
-//   },
-// });
-
-// // Define the route for creating a digital edition with multiple PDF uploads
-// router.post(
-//   "/createDigitalEdition",
-//   upload.fields([
-//     { name: "image1", maxCount: 1 },
-//     { name: "image2", maxCount: 100 }, // Allow multiple PDF uploads
-//   ]),
-//   createDigitalEdition
-// );
-// router.get("/getAllDigitalEditions", getAllDigitalEditions);
-// router.get("/getDigitalEditionBySlug/:slug", getDigitalEditionBySlug);
-// router.get("/getDigitalEditionById/:digitalEditionId", getDigitalEditionById);
-// router.delete("/deleteDigitalEdition/:id", deleteDigitalEdition);
-// router.put(
-//   "/updateDigitalEdition/:digitalEditionId",
-//   upload.fields([
-//     { name: "image1", maxCount: 1 },
-//     { name: "image2", maxCount: 150 }, // Allow multiple PDF uploads
-//   ]),
-//   updateDigitalEdition
-// );
-
-// module.exports = router;
-
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -71,6 +7,8 @@ const path = require("path");
 const {
   createDigitalEdition,
   getAllDigitalEditions,
+  getAllDigitalEditions2,
+  getDigitalEditionsCount,
   getDigitalEditionById,
   getDigitalEditionBySlug,
   updateDigitalEdition,
@@ -128,7 +66,9 @@ router.post(
   ]),
   createDigitalEdition
 );
+router.get("/getAllDigitalEditions2", getAllDigitalEditions2);
 router.get("/getAllDigitalEditions", getAllDigitalEditions);
+router.get("/getDigitalEditionsCount", getDigitalEditionsCount);
 router.get("/getDigitalEditionBySlug/:slug", getDigitalEditionBySlug);
 router.get("/getDigitalEditionById/:digitalEditionId", getDigitalEditionById);
 router.delete("/deleteDigitalEdition/:id", deleteDigitalEdition);
