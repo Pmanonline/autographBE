@@ -119,6 +119,7 @@ const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const connectDB = require("./config/db.config");
 const { errorHandlingMiddleware } = require("./middlewares/errorHandling.js");
+const visitTrackerMiddleware = require("./middlewares/visitsTracker.js");
 
 // Route imports
 const Routes = require("./routes/route.js");
@@ -131,6 +132,7 @@ const commentRoutes = require("./routes/commentRoute.js");
 const UserRoutes = require("./routes/userRoutes.js");
 const PostsRoutes = require("./routes/postRoutes.js");
 const authorRoutes = require("./routes/authorRoutes.js");
+const visitRoutes = require("./routes/IPvisitsRoutes.js");
 
 const app = express();
 
@@ -139,6 +141,9 @@ dotenv.config();
 
 // Connect to database
 connectDB();
+
+// Add the middleware before your routes
+app.use(visitTrackerMiddleware);
 
 // CORS Configuration
 const corsOptions = {
@@ -188,6 +193,7 @@ app.use("/api", commentRoutes);
 app.use("/api", UserRoutes);
 app.use("/api", PostsRoutes);
 app.use("/api", authorRoutes);
+app.use("/api/visits", visitRoutes);
 
 // Test route
 app.get("/", (req, res) => {
