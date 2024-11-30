@@ -147,9 +147,10 @@ connectDB();
 
 // CORS Configuration
 const corsOptions = {
-  origin: "*", // Allow all origins (you can specify a specific origin if needed)
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+  origin: "*", // Allow all origins
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: false, // Explicitly set to false
 };
 app.use(morgan("dev"));
 
