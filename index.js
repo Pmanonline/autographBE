@@ -143,14 +143,14 @@ dotenv.config();
 connectDB();
 
 // Add the middleware before your routes
-app.use(visitTrackerMiddleware);
+// app.use(visitTrackerMiddleware);
 
 // CORS Configuration
 const corsOptions = {
-  origin: ["*", "http://localhost:5173", "https://autographbackend.vercel.app"],
+  origin: ["*"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
+  credentials: false,
 };
 
 app.use(morgan("dev"));
