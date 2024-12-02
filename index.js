@@ -87,7 +87,7 @@ app.use("/api/visits", visitRoutes);
 
 // Test route
 app.get("/", (req, res) => {
-  res.json("This API is available!! today!!");
+  res.json("This API is available!!...!!");
 });
 
 // 6. Error handling middleware (should be last)
