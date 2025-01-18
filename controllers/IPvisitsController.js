@@ -1,5 +1,22 @@
-// controllers/IPVisitController.js
 const VisitModel = require("../models/IPvisitsModel");
+const rateLimit = require("express-rate-limit");
+
+// Rate limiting middleware
+const visitRateLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 30, // limit each IP to 30 requests per windowMs
+  message: "Too many visit records created, please try again later",
+});
+
+// Helper to validate if enough time has passed since last visit
+const isValidNewVisit = (lastVisitTime, minTimeBetweenVisits = 60000) => {
+  // 1 minute minimum
+  const now = Date.now();
+  return (
+    !lastVisitTime ||
+    now - new Date(lastVisitTime).getTime() >= minTimeBetweenVisits
+  );
+};
 
 const recordVisit = async (req, res) => {
   const ipAddress = req.ip;
@@ -7,32 +24,57 @@ const recordVisit = async (req, res) => {
 
   try {
     const existingVisitor = await VisitModel.findOne({ ipAddress });
+
+    // Check if this is too soon after the last visit
+    if (existingVisitor && !isValidNewVisit(existingVisitor.lastVisit)) {
+      return res.status(429).json({
+        message: "Visit recorded too soon after previous visit",
+        nextValidVisitTime: new Date(
+          existingVisitor.lastVisit.getTime() + 60000
+        ),
+      });
+    }
+
     const isNewVisitor = !existingVisitor;
 
-    // Using findOneAndUpdate for atomic operations
+    // Using findOneAndUpdate with additional validation
     const visit = await VisitModel.findOneAndUpdate(
-      { ipAddress },
+      {
+        ipAddress,
+        // Additional validation to prevent race conditions
+        $or: [
+          { lastVisit: { $exists: false } },
+          { lastVisit: { $lte: new Date(Date.now() - 60000) } },
+        ],
+      },
       {
         $inc: { totalVisits: 1 },
         $set: {
-          lastVisit: Date.now(),
+          lastVisit: new Date(),
           userAgent,
           isUnique: isNewVisitor,
         },
         $push: {
           visits: {
-            timestamp: Date.now(),
+            timestamp: new Date(),
             userAgent,
           },
         },
       },
       {
         new: true,
-        upsert: true,
+        upsert: isNewVisitor,
         runValidators: true,
         setDefaultsOnInsert: true,
       }
     );
+
+    // If no update occurred due to rate limiting conditions
+    if (!visit) {
+      return res.status(429).json({
+        message: "Visit recorded too soon after previous visit",
+      });
+    }
 
     res.status(200).json({
       message: "Visit recorded successfully",
@@ -172,8 +214,9 @@ const getVisitorDetails = async (req, res) => {
   }
 };
 
+// Export with rate limiter middleware
 module.exports = {
-  recordVisit,
+  recordVisit: [visitRateLimiter, recordVisit],
   getVisitStatistics,
   getVisitorDetails,
 };
