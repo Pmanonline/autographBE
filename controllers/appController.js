@@ -312,10 +312,7 @@ const forgotPassword = async (req, res) => {
     console.log("Reset token:", resetToken);
     console.log("Token expiration time:", user.resetPasswordExpires);
 
-    const frontendURL =
-      process.env.NODE_ENV === "production"
-        ? process.env.FRONTEND_URL
-        : "http://localhost:5173";
+    const frontendURL = process.env.FRONTEND_URL;
 
     const resetUrl = `${frontendURL}/reset-password/${resetToken}`;
     const mailOptions = {

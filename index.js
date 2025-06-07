@@ -10,7 +10,7 @@ const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const connectDB = require("./config/db.config");
 const { errorHandlingMiddleware } = require("./middlewares/errorHandling.js");
-const visitTrackerMiddleware = require("./middlewares/visitsTracker.js");
+// const visitTrackerMiddleware = require("./middlewares/visitsTracker.js");
 
 // Route imports
 const Routes = require("./routes/route.js");
@@ -34,7 +34,7 @@ dotenv.config();
 connectDB();
 
 // Add the middleware before your routes
-app.use(visitTrackerMiddleware);
+// app.use(visitTrackerMiddleware);
 
 // CORS Configuration
 const corsOptions = {
